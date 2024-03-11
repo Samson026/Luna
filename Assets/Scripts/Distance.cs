@@ -16,7 +16,6 @@ public class Distance : MonoBehaviour
     void Update()
     {
         float distance = (Vector3.Distance(targetLocation.position, transform.position) * 1000);
-        Debug.Log("distance: " + distance);
         pdPatch.SendFloat("distance", distance);
     }
 }
