@@ -10446,7 +10446,7 @@ MonoBehaviour:
   patchName: sphere
   patchDir: /PdAssets/
   patch: {fileID: 102900000, guid: dcb5e86dddd084142a2ef1629c62bdd3, type: 3}
-  pipePrintToConsole: 0
+  pipePrintToConsole: 1
   pureDataEvents:
     Bang:
       m_PersistentCalls:

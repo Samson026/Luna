@@ -21,7 +21,7 @@ public class Distance : MonoBehaviour
     {
         pdPatch.SendFloat("harm"+name, 3.0f);
         pdPatch.SendFloat("note"+name, 3.0f);
-        pdPatch.SendFloat("vol", 0.2f);
+        pdPatch.SendFloat("vol", 0.1f);
     }
 
     // Update is called once per frame
