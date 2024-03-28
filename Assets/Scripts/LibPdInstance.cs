@@ -729,6 +729,7 @@ public class LibPdInstance : MonoBehaviour
 		 */
 		if(this == activeInstances[0])
 		{
+			libpd_set_instance(instance);
 			libpd_queued_receive_pd_messages();
 			libpd_queued_receive_midi_messages();
 		}

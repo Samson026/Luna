@@ -16,6 +16,7 @@ public class Distance : MonoBehaviour
     private Vector3 gPosition;
     public string name;
     public HandGrabInteractor [] interactors;
+    public HandGrabInteractable [] interactables;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,8 +30,13 @@ public class Distance : MonoBehaviour
     {
         // Check if object is grabbed
         bool aHand = false;
-        for (int i = 0; i < interactors.Length; i++) {
-            if (interactors[i].State == Oculus.Interaction.InteractorState.Select) {
+        // for (int i = 0; i < interactors.Length; i++) {
+        //     if (interactors[i].State == Oculus.Interaction.InteractorState.Select) {
+        //         aHand = true;
+        //     }
+        // }
+         for (int i = 0; i < interactables.Length; i++) {
+            if (interactables[i].Interactors.Count > 0) {
                 aHand = true;
             }
         }
