@@ -11,8 +11,12 @@ using UnityEngine.UIElements;
 public class SphereController : MonoBehaviour
 {
     public LibPdInstance pdPatch;
-    public Transform leftHand;
-    public Transform rightHand;
+    private Transform leftHandPos;
+    private Transform rightHandPos;
+
+    public OVRSkeleton leftHand;
+    public OVRSkeleton rightHand;
+
     private bool grabbed = false;
     private bool attached = false;
     private Vector3 gPosition;
@@ -30,6 +34,20 @@ public class SphereController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // get hand pos
+
+        foreach (var bone in leftHand.Bones) {
+            if (bone.Id == OVRSkeleton.BoneId.Hand_Thumb1) {
+                leftHandPos = bone.Transform;
+            }
+        }
+
+        foreach (var bone in rightHand.Bones) {
+            if (bone.Id == OVRSkeleton.BoneId.Hand_Thumb1) {
+                rightHandPos = bone.Transform;
+            }
+        }
+
         // Check if object is grabbed
         
         if (interactables.Interactors.Count > 0) {
@@ -53,7 +71,7 @@ public class SphereController : MonoBehaviour
             pdPatch.SendFloat("I", Angle() * 50);
 
             // update position
-            Vector3 pos = (rightHand.position + leftHand.position) /2;
+            Vector3 pos = (leftHandPos.position + rightHandPos.position) /2;
             positions.Add(pos);
 
             Debug.Log(positions.Count());
@@ -69,13 +87,13 @@ public class SphereController : MonoBehaviour
     }
     
     private float Gap() {
-        return Vector3.Distance(leftHand.position, rightHand.position);
+        return Vector3.Distance(leftHandPos.position, rightHandPos.position);
     }
 
     private float Angle() {
-        float x = rightHand.position.x - leftHand.position.x;
-        float y = rightHand.position.y - leftHand.position.y; 
-        float z = rightHand.position.z - leftHand.position.z;
+        float x = rightHandPos.position.x - leftHandPos.position.x;
+        float y = rightHandPos.position.y - leftHandPos.position.y; 
+        float z = rightHandPos.position.z - leftHandPos.position.z;
 
         float m = y/x;
         float angleRadians = Mathf.Atan(m);
@@ -92,7 +110,7 @@ public class SphereController : MonoBehaviour
     }
 
     private float Distance() {
-        return Vector3.Distance((rightHand.position + leftHand.position) /2, gPosition);
+        return Vector3.Distance((rightHandPos.position + leftHandPos.position) /2, gPosition);
     }
 
 
