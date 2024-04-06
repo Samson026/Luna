@@ -109,6 +109,9 @@ public class LibPdInstance : MonoBehaviour
 	//--------------------------------------------------------------------------
 	/// libpd functions that we need to be able to call from C#.
 	[DllImport(DLL_NAME)]
+	private static extern int libpd_init();
+
+	[DllImport(DLL_NAME)]
 	private static extern int libpd_queued_init();
 
 	[DllImport(DLL_NAME)]
@@ -504,12 +507,16 @@ public class LibPdInstance : MonoBehaviour
 	#endregion
 	
 	#region MonoBehaviour methods
+
+	public string id;
 	//--------------------------------------------------------------------------
 	/// Initialise LibPd.
 	void Awake()
 	{
 		//Initialise libpd if possible, report any errors.
-		int initErr = libpd_queued_init();
+		//Create our instance.
+		
+		int initErr = libpd_init();
 		if (initErr != 0)
 		{
 			Debug.LogWarning("Warning; libpd_init() returned " + initErr);
@@ -519,6 +526,13 @@ public class LibPdInstance : MonoBehaviour
 		//Initialise libpd, if it's not already.
 		if (!pdInitialised)
 		{
+			// Create new pd instance
+			instance = libpd_new_instance();
+			libpd_set_instance(instance);
+
+			// init queue buffers
+			libpd_queued_init();
+
 			//Setup hooks.
 			printHook = new LibPdPrintHook(PrintOutput);
 			libpd_set_queued_printhook(printHook);
@@ -581,11 +595,8 @@ public class LibPdInstance : MonoBehaviour
 		AudioSettings.GetDSPBufferSize(out bufferSize, out noOfBuffers);
 		numTicks = bufferSize/libpd_blocksize();
 
-		//Create our instance.
-		instance = libpd_new_instance();
-
 		//Set our instance.
-		libpd_set_instance(instance);
+		// libpd_set_instance(instance);
 
 		//Initialise audio.
 		int requestedNumSpeakers = GetNumSpeakers(AudioSettings.speakerMode);
