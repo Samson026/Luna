@@ -10345,6 +10345,14 @@ PrefabInstance:
       propertyPath: id
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 2597038870006680032, guid: 05759921ef8187848bb78fa05cb72222, type: 3}
+      propertyPath: leftHand
+      value: 
+      objectReference: {fileID: 1296506094}
+    - target: {fileID: 2597038870006680032, guid: 05759921ef8187848bb78fa05cb72222, type: 3}
+      propertyPath: rightHand
+      value: 
+      objectReference: {fileID: 468477866}
     - target: {fileID: 6534224947675872702, guid: 05759921ef8187848bb78fa05cb72222, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -10569,6 +10577,10 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1924943362560983439, guid: 05759921ef8187848bb78fa05cb72222, type: 3}
       propertyPath: id
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1924943362560983439, guid: 05759921ef8187848bb78fa05cb72222, type: 3}
+      propertyPath: pipePrintToConsole
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2597038870006680032, guid: 05759921ef8187848bb78fa05cb72222, type: 3}
