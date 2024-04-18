@@ -26,13 +26,15 @@ public class SphereController : MonoBehaviour
     private OVRBone rightBone;
     private OVRBone leftBone;
     private Vector3 home;
+
+    private float maxAudio = 0.1f;
     // Start is called before the first frame update
     void Start()
     {
         home = new Vector3(0.00f, 0.00f, 0.00f);
         pdPatch.SendFloat("harm", 3.0f);
         pdPatch.SendFloat("note", 3.0f);
-        pdPatch.SendFloat("vol", 0.1f);
+        pdPatch.SendFloat("vol", maxAudio);
         pdPatch.SendFloat("M", 0.5f);
         positions = new List<Vector3>(); 
 
@@ -110,6 +112,9 @@ public class SphereController : MonoBehaviour
 
     public void AttachSphere() {
         attached = !attached;
+
+        if (!attached)
+            StartCoroutine(Ambient());
     }
 
     IEnumerator SetBones() {
@@ -134,6 +139,43 @@ public class SphereController : MonoBehaviour
             if (bone.Id == OVRSkeleton.BoneId.Hand_Thumb1) {
                 rightBone = bone;
             }
+        }
+    }
+
+    IEnumerator Ambient() {
+        float vol = maxAudio;
+        bool up = false;
+        float time;
+
+        time = UnityEngine.Random.Range(0.5f, 0.1f);
+
+
+
+        Debug.Log("ambient");
+
+        while (!attached) {
+            Debug.Log("ambient here");
+
+            if (up)
+                vol = vol + 0.01f;
+            else
+                vol = vol - 0.01f;
+
+            if (vol >= maxAudio)
+                up = false;
+            else if (vol <= 0)
+                up = true;
+            
+            pdPatch.SendFloat("vol", vol);
+
+            yield return new WaitForSeconds(time);
+        }
+
+        while (vol < maxAudio) {
+            vol = vol + 0.01f;
+            pdPatch.SendFloat("vol", vol);
+
+            yield return new WaitForSeconds(0.2f);
         }
     }
 

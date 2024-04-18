@@ -57,6 +57,6 @@ public class GameManager : MonoBehaviour
             }
         }
         // Debug.Log("running attach2 + " + s);
-        s.GetComponent<SphereController>().attached = !s.GetComponent<SphereController>().attached;
+        s.GetComponent<SphereController>().AttachSphere();
     }
 }
