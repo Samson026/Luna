@@ -12,10 +12,12 @@ public class GameManager : MonoBehaviour
     public OVRHand leftHand;
     public OVRHand rightHand;
     List<GameObject> spheres;
+    private GameObject attachedSphere;
     // Start is called before the first frame update
     void Start()
     {
         spheres = new List<GameObject>();
+        attachedSphere = new GameObject();
     }
 
     // Update is called once per frame
@@ -58,5 +60,14 @@ public class GameManager : MonoBehaviour
         }
         // Debug.Log("running attach2 + " + s);
         s.GetComponent<SphereController>().AttachSphere();
+        attachedSphere = s;
+    }
+
+    public void DeleteSphere() {
+        Debug.Log("oldmate + " + attachedSphere);
+
+        spheres.Remove(attachedSphere);
+        Destroy(attachedSphere);
+        attachedSphere = new GameObject();
     }
 }

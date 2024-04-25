@@ -515,9 +515,7 @@ public class LibPdInstance : MonoBehaviour
 	{
 		//Initialise libpd if possible, report any errors.
 		//Create our instance.
-		Debug.Log("got here " + id);
 		if (!pdInitialised) {
-			Debug.Log("got here init pd " + id);
 			int initErr = libpd_init();
 			if (initErr != 0)
 			{
@@ -529,10 +527,6 @@ public class LibPdInstance : MonoBehaviour
 			}
 		}
 
-		Debug.Log("got here 2" + id);
-		//Initialise libpd, if it's not already.
-		
-		Debug.Log("got here 3" + id);
 		// Create new pd instance
 		instance = libpd_new_instance();
 		libpd_set_instance(instance);
@@ -707,7 +701,7 @@ public class LibPdInstance : MonoBehaviour
 			bindings.Clear();
 
 			libpd_closefile(patchPointer);
-
+			libpd_queued_release();
 			libpd_free_instance(instance);
 		}
 
@@ -716,14 +710,6 @@ public class LibPdInstance : MonoBehaviour
 		//If we're the last instance left, release libpd's ringbuffer.
 		if(pdInitialised && (numInstances < 1))
 		{
-			if(printHook != null)
-			{
-				printHook = null;
-				libpd_set_queued_printhook(printHook);
-			}
-
-			libpd_queued_release();
-
 			pdInitialised = false;
 		}
 	}
@@ -794,8 +780,15 @@ public class LibPdInstance : MonoBehaviour
 	{
 		if(!pdFail && !patchFail && loaded)
 		{
-			libpd_set_instance(instance);
-			libpd_process_float(numTicks, data, data);
+			if (numTicks == 0)
+			{
+				Debug.LogError("LibPdInstance.OnAudioFilterRead() ---- numTicks is 0");
+			}
+			else
+			{
+				libpd_set_instance(instance);
+				libpd_process_float(numTicks, data, data);
+			}
 		}
 	}
 	#endregion
