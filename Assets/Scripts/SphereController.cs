@@ -5,8 +5,6 @@ using System.Linq;
 using Oculus.Interaction.HandGrab;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.UIElements;
 
 public class SphereController : MonoBehaviour
 {
@@ -17,28 +15,26 @@ public class SphereController : MonoBehaviour
     public OVRHand leftHand;
     public OVRHand rightHand;
 
-    private bool grabbed = false;
     public bool attached = false;
-    private Vector3 gPosition;
+    public Vector3 startPosition;
     private List<Vector3> positions;
     public HandGrabInteractable interactables;
 
     private OVRBone rightBone;
     private OVRBone leftBone;
-    private Vector3 home;
 
     private float maxAudio = 0.1f;
     // Start is called before the first frame update
     void Start()
     {
-        home = new Vector3(0.00f, 0.00f, 0.00f);
-        pdPatch.SendFloat("harm", 3.0f);
+        pdPatch.SendFloat("harm", 10.0f);
         pdPatch.SendFloat("note", 3.0f);
         pdPatch.SendFloat("vol", maxAudio);
-        pdPatch.SendFloat("M", 0.5f);
+        pdPatch.SendFloat("M", 0.3f);
         positions = new List<Vector3>(); 
 
         StartCoroutine(SetBones());
+        startPosition = new Vector3(0, 1, 0);
     }
 
     // Update is called once per frame
@@ -49,32 +45,16 @@ public class SphereController : MonoBehaviour
         rightHandPos = rightBone.Transform;
         
         // Check if object is grabbed
-        
-        // if (interactables.Interactors.Count > 0) {
-        //     if (!grabbed) {
-        //         grabbed = true;
-        //     }
-        // }
-        // else {
-        //     if (grabbed) {
-        //         attached = !attached;
-        //         grabbed = false;
-        //         gPosition = transform.position;
-        //     }
-        // }
        
         if (attached) {
             // send audio data
-
-            pdPatch.SendFloat("ampmod", Gap() * 100);
-            pdPatch.SendFloat("note", Distance() * 8);
-            pdPatch.SendFloat("I", Angle() * 25);
+            UpdateIndex();
+            UpdateNote();
+            UpdateHarm();
 
             // update position
             Vector3 pos = (leftHandPos.position + rightHandPos.position) /2;
             positions.Add(pos);
-
-            // Debug.Log(positions.Count());
 
             if (positions.Count() >= 20) {
                 transform.position = positions[0];
@@ -84,30 +64,68 @@ public class SphereController : MonoBehaviour
     }
     
     private float Gap() {
-        return Vector3.Distance(leftHandPos.position, rightHandPos.position);
+        return Vector3.Distance(leftHandPos.position, rightHandPos.position) / 1f;
+    }
+
+    private void UpdateNote() {
+        float note;
+        float steps = 8f;
+
+        note = Angle() * steps;
+        pdPatch.SendFloat("note", note); 
+    }
+
+    private void UpdateHarm() {
+        float harm;
+        float steps = 13f;
+
+        harm = Gap() * steps;
+        if (harm < 1)
+            harm = 1;
+        pdPatch.SendFloat("harm", harm); 
+    }
+
+    private void UpdateIndex() {
+        float index;
+        float steps = 5f;
+
+        index = Distance() * steps;
+        Debug.Log("index " + index);
+        pdPatch.SendFloat("I", index); 
+    }
+
+    private void UpdateModulation() {
+        float mod;
+        float steps = 1f;
+
+        mod = Gap() * steps;
+        pdPatch.SendFloat("M", mod);  
     }
 
     private float Angle() {
         float x = rightHandPos.position.x - leftHandPos.position.x;
         float y = rightHandPos.position.y - leftHandPos.position.y; 
-        // float z = rightHandPos.position.z - leftHandPos.position.z;
 
         float m = y/x;
         float angleRadians = Mathf.Atan(m);
         float angleDegrees = angleRadians * Mathf.Rad2Deg;
 
-        Debug.Log("angle degrees: " + angleDegrees);
+        if (rightHandPos.position.y > leftHandPos.position.y) {
+            angleDegrees = MathF.Abs(angleDegrees) + 90f;
+        }
+        else {
+            if (angleDegrees > 0)
+                angleDegrees =  90f + angleDegrees;
+            else
+                angleDegrees =  angleDegrees + 90f;
+        }
 
-        if (angleDegrees < 0)
-            angleDegrees = MathF.Abs(angleDegrees);
-        else
-            angleDegrees += 40f;
-
-        return angleDegrees/90;
+        return angleDegrees / 180;
     }
 
     private float Distance() {
-        return Vector3.Distance((rightHandPos.position + leftHandPos.position) /2, gPosition);
+        float d = Vector3.Distance((rightHandPos.position + leftHandPos.position) /2, startPosition);
+        return d / 1f;
     }
 
     public void AttachSphere() {
@@ -125,12 +143,9 @@ public class SphereController : MonoBehaviour
             yield return new WaitForSeconds(1);
         }
 
-        Debug.Log("bone count " + leftSkeleton.Bones.Count);
-
         // set reference to left and right bones
         foreach (var bone in leftSkeleton.Bones) {
             if (bone.Id == OVRSkeleton.BoneId.Hand_Thumb1) {
-                Debug.Log("set bone " + bone);
                 leftBone = bone;
             }
         }
@@ -147,14 +162,9 @@ public class SphereController : MonoBehaviour
         bool up = false;
         float time;
 
-        time = UnityEngine.Random.Range(0.5f, 0.1f);
-
-
-
-        Debug.Log("ambient");
+        time = Gap() * 0.5f;// UnityEngine.Random.Range(0.5f, 0.1f);
 
         while (!attached) {
-            Debug.Log("ambient here");
 
             if (up)
                 vol = vol + 0.01f;

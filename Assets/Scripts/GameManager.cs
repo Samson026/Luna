@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
         GameObject s = Instantiate(sphere);
         s.GetComponent<SphereController>().rightHand = rightHand;
         s.GetComponent<SphereController>().leftHand = leftHand;
+        s.GetComponent<SphereController>().startPosition = s.transform.position;
         // Debug.Log("running Creating " + s);
         spheres.Add(s);
         // Debug.Log("running Creating " + spheres.First());       
