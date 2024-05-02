@@ -5242,6 +5242,7 @@ MonoBehaviour:
     MidiByte:
       m_PersistentCalls:
         m_Calls: []
+  id: 
 --- !u!54 &5106144553727853919
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5284,4 +5285,6 @@ MonoBehaviour:
   pdPatch: {fileID: 1924943362560983439}
   leftHand: {fileID: 0}
   rightHand: {fileID: 0}
+  attached: 0
+  startPosition: {x: 0, y: 0, z: 0}
   interactables: {fileID: 9135667437058492653}

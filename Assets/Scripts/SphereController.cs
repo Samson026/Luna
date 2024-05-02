@@ -34,7 +34,7 @@ public class SphereController : MonoBehaviour
         positions = new List<Vector3>(); 
 
         StartCoroutine(SetBones());
-        startPosition = new Vector3(0, 1, 0);
+        startPosition = new Vector3(0, 1.5f, 0);
     }
 
     // Update is called once per frame
@@ -51,6 +51,9 @@ public class SphereController : MonoBehaviour
             UpdateIndex();
             UpdateNote();
             UpdateHarm();
+            UpdateMod();
+            UpdateAmpMod();
+            UpdateSize();
 
             // update position
             Vector3 pos = (leftHandPos.position + rightHandPos.position) /2;
@@ -89,17 +92,34 @@ public class SphereController : MonoBehaviour
         float index;
         float steps = 5f;
 
-        index = Distance() * steps;
+        index = DistanceX() * steps;
         Debug.Log("index " + index);
         pdPatch.SendFloat("I", index); 
     }
 
-    private void UpdateModulation() {
+    private void UpdateAmpMod() {
+        float index;
+        float steps = 5f;
+
+        index = DistanceY() * steps;
+        Debug.Log("index " + index);
+        pdPatch.SendFloat("amp", index); 
+    }
+
+    private void UpdateMod() {
         float mod;
         float steps = 1f;
 
-        mod = Gap() * steps;
+        mod = DistanceZ() * steps;
         pdPatch.SendFloat("M", mod);  
+    }
+
+    private void UpdateSize() {
+        float scale = (Gap() * 0.4f);
+        Vector3 scaleVec = new Vector3(scale, scale, scale);
+
+
+        transform.GetChild(1).localScale = scaleVec;
     }
 
     private float Angle() {
@@ -123,9 +143,21 @@ public class SphereController : MonoBehaviour
         return angleDegrees / 180;
     }
 
-    private float Distance() {
-        float d = Vector3.Distance((rightHandPos.position + leftHandPos.position) /2, startPosition);
-        return d / 1f;
+    private float DistanceX() {
+        Vector3 mid = (rightHandPos.position + leftHandPos.position) /2;
+        float d = Mathf.Abs(mid.x - startPosition.x);
+        return d / 2f;
+    }
+    private float DistanceY() {
+        Vector3 mid = (rightHandPos.position + leftHandPos.position) /2;
+        float d = Mathf.Abs(mid.y - startPosition.y);
+        return d / 2f;
+    }
+
+    private float DistanceZ() {
+        Vector3 mid = (rightHandPos.position + leftHandPos.position) /2;
+        float d = Mathf.Abs(mid.z - startPosition.z);
+        return d / 2f;
     }
 
     public void AttachSphere() {
