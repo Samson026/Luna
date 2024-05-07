@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Oculus.Interaction.HandGrab;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class SphereController : MonoBehaviour
@@ -54,6 +53,7 @@ public class SphereController : MonoBehaviour
             UpdateMod();
             UpdateAmpMod();
             UpdateSize();
+            UpdateColour();
 
             // update position
             Vector3 pos = (leftHandPos.position + rightHandPos.position) /2;
@@ -93,17 +93,15 @@ public class SphereController : MonoBehaviour
         float steps = 5f;
 
         index = DistanceX() * steps;
-        Debug.Log("index " + index);
         pdPatch.SendFloat("I", index); 
     }
 
     private void UpdateAmpMod() {
         float index;
-        float steps = 5f;
+        float steps = 500f;
 
         index = DistanceY() * steps;
-        Debug.Log("index " + index);
-        pdPatch.SendFloat("amp", index); 
+        pdPatch.SendFloat("ampmod", index); 
     }
 
     private void UpdateMod() {
@@ -115,11 +113,21 @@ public class SphereController : MonoBehaviour
     }
 
     private void UpdateSize() {
-        float scale = (Gap() * 0.4f);
+        float scale = Gap() * 0.4f;
         Vector3 scaleVec = new Vector3(scale, scale, scale);
 
 
         transform.GetChild(1).localScale = scaleVec;
+    }
+
+    private void UpdateColour() {
+        // Get the ParticleSystem component attached to this GameObject
+        ParticleSystem particleSystem =  transform.GetChild(1).GetComponent<ParticleSystem>();
+
+        // Get the material used by the ParticleSystem
+        Material particleMaterial = particleSystem.GetComponent<Renderer>().material;
+        Color color = new Color(DistanceX(), DistanceY(), DistanceZ(), 1f);
+        particleMaterial.SetColor("Color_7D9A58EC", color);
     }
 
     private float Angle() {
