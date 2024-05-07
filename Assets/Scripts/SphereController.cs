@@ -22,18 +22,21 @@ public class SphereController : MonoBehaviour
     private OVRBone rightBone;
     private OVRBone leftBone;
 
-    private float maxAudio = 0.1f;
+    public float maxAudio = 0.1f;
+    public float maxSize = 0.2f;
     // Start is called before the first frame update
     void Start()
     {
         pdPatch.SendFloat("harm", 10.0f);
         pdPatch.SendFloat("note", 3.0f);
-        pdPatch.SendFloat("vol", maxAudio);
         pdPatch.SendFloat("M", 0.3f);
         positions = new List<Vector3>(); 
 
         StartCoroutine(SetBones());
         startPosition = new Vector3(0, 1.5f, 0);
+
+        StartCoroutine(StartAudio());
+        StartCoroutine(StartSize());
     }
 
     // Update is called once per frame
@@ -202,7 +205,7 @@ public class SphereController : MonoBehaviour
         bool up = false;
         float time;
 
-        time = Gap() * 0.5f;// UnityEngine.Random.Range(0.5f, 0.1f);
+        time = Gap() * 0.5f;
 
         while (!attached) {
 
@@ -229,5 +232,42 @@ public class SphereController : MonoBehaviour
         }
     }
 
+    IEnumerator StartAudio() {
+        float vol = 0f;
+        while (vol < maxAudio) {
+            vol = vol + 0.01f;
+            pdPatch.SendFloat("vol", vol);
+            
 
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+    
+    IEnumerator StartSize() {
+        float scale = 0f;
+        while (scale < maxSize) {
+            scale += 0.01f;
+            Vector3 scaleVec = new Vector3(scale, scale, scale);
+            transform.GetChild(1).localScale = scaleVec;
+            
+            yield return new WaitForSeconds(0.01f);
+        }
+    }
+
+    public void Remove() {
+        StartCoroutine(_Remove());
+    }
+
+    IEnumerator _Remove() {
+        transform.GetChild(1).GetComponent<ParticleSystem>().Stop();
+        float vol = maxAudio;
+        while (vol > 0) {
+            vol = vol - 0.01f;
+            pdPatch.SendFloat("vol", vol);
+
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        Destroy(gameObject);
+    }
 }

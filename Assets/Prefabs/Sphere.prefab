@@ -5288,3 +5288,4 @@ MonoBehaviour:
   attached: 0
   startPosition: {x: 0, y: 0, z: 0}
   interactables: {fileID: 9135667437058492653}
+  maxAudio: 0.1
